@@ -4,6 +4,7 @@ package view;
  * Created by daini on 17/04/16.
  */
 
+import edu.uci.ics.crawler4j.crawler.CrawlController;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.geometry.Insets;
@@ -20,10 +21,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import main.Main;
+import models.CrawControllerWrapper;
 import models.MappingArticle;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static config.CrawlerStartController.controlerWrappers;
 
 public class CrawlingProgressView {
 
@@ -83,6 +87,11 @@ public class CrawlingProgressView {
         Button cancelBtn = new Button("Cancel crawl");
         cancelBtn.setAlignment(Pos.CENTER);
         cancelBtn.setOnAction(event -> {
+            for(CrawControllerWrapper crawlerWrapper : controlerWrappers){
+                CrawlController crawler = crawlerWrapper.controller;
+                crawler.shutdown();
+            }
+
             Main.thestage.setScene(MainView.generateLayout());
         });
 

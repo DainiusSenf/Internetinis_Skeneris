@@ -27,9 +27,10 @@ public class CrawlerStartController {
     public static MySQL_Connector mySQL_connector;
     public static MongoDB_Connector mongoDB_connector;
     public static Map<String, MappingArticle> maps = new HashMap<>();
-    private static List<CrawControllerWrapper> controlerWrappers = new ArrayList<>();
+    public static List<CrawControllerWrapper> controlerWrappers = new ArrayList<>();
 
     private static void createCrawlers() throws Exception {
+        controlerWrappers = new ArrayList<>();
         int i =0;
         Date today = Calendar.getInstance().getTime();
         for(MappingArticle map : MainView.mapsList){
@@ -116,7 +117,6 @@ public class CrawlerStartController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             crawler.startNonBlocking(Crawler.class, ConfigCrawlerView.crawlerThreadsCount);
 
             System.out.println("Finished " + crawlerWrapper.webURL);
