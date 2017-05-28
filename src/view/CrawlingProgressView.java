@@ -11,17 +11,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import main.Main;
-import models.CrawControllerWrapper;
 import models.MappingArticle;
 
 import java.util.ArrayList;
@@ -36,6 +32,8 @@ public class CrawlingProgressView {
     private static final List<ProgressIndicator> progressIndicators = new ArrayList<>();
 
     private static final List<ReadOnlyDoubleWrapper> progressList = new ArrayList<>();
+    public static Button cancelBtn;
+    private static Boolean isCrawlFinished = false;
 
     public static ReadOnlyDoubleProperty progressListGet(int i) {
         return progressList.get(i);
@@ -44,13 +42,30 @@ public class CrawlingProgressView {
     public static void performWorkOnDbList(double percentage, int i) throws Exception {
         progressList.get(i).set(percentage);
         progressIndicators.get(i).setProgress(percentage);
+
+        Boolean isFinished = isAllFinished();
+        if(isFinished){
+            cancelBtn.setText("Go back to main view");
+        }
+    }
+
+    public static boolean isAllFinished(){
+        for(ProgressIndicator pr : progressIndicators){
+            if(pr.getProgress() < 0.99){
+                return false;
+            }
+        }
+        isCrawlFinished = true;
+        return true;
     }
 
     private static final ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper();
 
-
     public Scene startScene() throws Exception {
-
+        isCrawlFinished = false;
+        progressIndicators.clear();
+        progressBars.clear();
+        progressList.clear();
         Group root = new Group();
         Scene scene = new Scene(root, 700, 500);
         scene.getStylesheets().add("progresssample/Style.css");
@@ -73,6 +88,7 @@ public class CrawlingProgressView {
                 pb.setPrefWidth(350);
                 progressBars.add(pb);
                 final ProgressIndicator pin = new ProgressIndicator(0.0);
+
                 progressIndicators.add(pin);
                 final HBox hb = new HBox();
 
@@ -84,19 +100,29 @@ public class CrawlingProgressView {
             }
         }
 
-        Button cancelBtn = new Button("Cancel crawl");
+        cancelBtn = new Button("Cancel crawl");
         cancelBtn.setAlignment(Pos.CENTER);
         cancelBtn.setOnAction(event -> {
-            for(CrawControllerWrapper crawlerWrapper : controlerWrappers){
-                CrawlController crawler = crawlerWrapper.controller;
-                crawler.shutdown();
+            if(!isCrawlFinished){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Canceled");
+                alert.setHeaderText(null);
+                alert.setContentText("Crawl canceled successfully");
+
+                for(int index = 0;index < controlerWrappers.size();index++){
+                    CrawlController crawler = controlerWrappers.get(index).controller;
+                    crawler.shutdown();
+                    if(index+1 == controlerWrappers.size()){
+                        alert.setOnShown(event1 ->  crawler.waitUntilFinish());
+                        alert.showAndWait();
+                    }
+                }
             }
 
             Main.thestage.setScene(MainView.generateLayout());
         });
 
         final HBox hb = new HBox();
-
         hb.setAlignment(Pos.CENTER);
         hb.getChildren().addAll(cancelBtn);
         hbs.add(hb);

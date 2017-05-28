@@ -62,7 +62,7 @@ public class MySQL_Connector {
         try (org.sql2o.Connection con = db_connection.open()) {
             con.createQuery(SQL_queries.INSERT_TO_STRAIPSNIS)
                     .addParameter("straipsnis_ID", article.id)
-                    .addParameter("puslapio_ID", 1)
+                    .addParameter("puslapio_ID", article.puslapio_id)
                     .addParameter("antraste", article.antraste)
                     .addParameter("kategorija", article.kategorija)
                     .addParameter("url", article.url)

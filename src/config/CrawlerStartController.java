@@ -43,7 +43,7 @@ public class CrawlerStartController {
 
                 config.setFollowRedirects(true);
                 config.setCrawlStorageFolder(crawlStorageFolder + "/crawler" + i);
-                config.setMaxPagesToFetch(ConfigCrawlerView.noPagesToCrawl);
+                config.setMaxPagesToFetch(ConfigCrawlerView.noPagesToCrawl*20);
                 config.setMaxDepthOfCrawling(ConfigCrawlerView.crawlerDepth);
                 if(!ConfigCrawlerView.useRobotPolitnes)
                     config.setPolitenessDelay(ConfigCrawlerView.politnesDelay);
@@ -110,6 +110,7 @@ public class CrawlerStartController {
                     }
                 };
                 CrawlingProgressView.progressBars.get(index).progressProperty().bind(task.progressProperty());
+
 
                 Thread th = new Thread(task);
                 th.setDaemon(true);

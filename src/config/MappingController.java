@@ -137,12 +137,12 @@ public class MappingController {
         map.antraste = Lists.newArrayList("og:title");
         map.kategorija =  Lists.newArrayList( "articleSection");
         map.tags = Lists.newArrayList("keywords");
-        map.turinys = Lists.newArrayList("div.arcticle_content  p");
+        map.turinys = Lists.newArrayList("div.arcticle_content  p",".article_inside","#intext");
         map.autorius = Lists.newArrayList(".authorFullName", "[itemprop=author]");
-        map.parasymoData = Lists.newArrayList("[itemprop=datePublished]");
+        map.parasymoData = Lists.newArrayList("[itemprop=datePublished]", "publish_time");
         map.koment_commentDate = Lists.newArrayList(".date");
         map.koment_Komentaras = Lists.newArrayList(".cont");
-        map.koment_Slapyvardis = Lists.newArrayList(".user_name");
+        map.koment_Slapyvardis = Lists.newArrayList(".user_name", ".username");
         map.koment_userIP = Lists.newArrayList(".user_ip");
         map.isCommentJSON = false;
         map.puslapisName = "tv3";

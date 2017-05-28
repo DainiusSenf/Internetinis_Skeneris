@@ -3,6 +3,7 @@ package controlers;
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 import config.CrawlerStartController;
+import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
@@ -35,7 +36,7 @@ import java.util.regex.Pattern;
  */
 public class Crawler extends WebCrawler
 {
-    private final static Pattern FILTERS = Pattern.compile(".*\\?comments|.*(\\.(css|js|gif|jpg"
+        private final static Pattern FILTERS = Pattern.compile(".*\\?comments|.*\\/komentarai\\/.*|.*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp3|zip|gz))$");
 
     private int straipsnioID = 0;
@@ -55,10 +56,10 @@ public class Crawler extends WebCrawler
      * with "http://www.ics.uci.edu/". In this case, we didn't need the
      * referringPage parameter to make the decision.
      */
-
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
+
 
 //        return !FILTERS.matcher(href).matches()
 //                && href.startsWith(pageURL);
@@ -93,25 +94,28 @@ public class Crawler extends WebCrawler
      * to be processed by your program.
      */
 
-
+    private int articlesCounter = 0;
     @Override
     public void visit(Page page) {
-
         String url = page.getWebURL().getURL();
-        System.out.println("page.getWebURL().getDocid(): " + page.getWebURL().getDocid());
-        double percentage = (double) page.getWebURL().getDocid() / ConfigCrawlerView.noPagesToCrawl;
-
-        try {
-            CrawlingProgressView.performWorkOnDbList(percentage, puslapioID);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         if (page.getParseData() instanceof HtmlParseData) {
             HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
             String pageType = htmlParseData.getMetaTags().get("og:type");
             if (pageType != null && Objects.equals(pageType, "article")) {
+                if(articlesCounter == ConfigCrawlerView.noPagesToCrawl){
+                    CrawlController controller = getMyController();
+                    CrawlingProgressView.cancelBtn.setText("Go back to main view");
+                    controller.shutdown();
+                }
+                articlesCounter++;
+                double percentage = (double) articlesCounter / ConfigCrawlerView.noPagesToCrawl;
+                try {
+                    CrawlingProgressView.performWorkOnDbList(percentage, puslapioID);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 int index = AddNewMapView.getIndexByProperty(puslapisName);
                 MappingArticle map = MainView.mapsList.get(index);
@@ -119,7 +123,9 @@ public class Crawler extends WebCrawler
                 saveStraipsnis(htmlParseData, url, map);
                 try {
                     List<Comment> parsedComments = new ArrayList<>();
-                    if(Objects.equals(page.getWebURL().getParentUrl(), "http://www.15min.lt/")){
+                    System.out.println("page.getWebURL().getParentUrl() " + page.getWebURL().getParentUrl());
+                    if(Objects.equals(page.getWebURL().getParentUrl(), "http://www.15min.lt/") ||
+                            Objects.equals(page.getWebURL().getParentUrl(), "https://www.15min.lt/")){
                         //15min
                         parsedComments = parseComment(htmlParseData, url+"?comments", straipsnioID, puslapioID, map);
                         insertKomentarai(parsedComments);
@@ -207,6 +213,7 @@ public class Crawler extends WebCrawler
         Date today = Calendar.getInstance().getTime();
         article.paemimoData = today;
         article.id = puslapioID+ "-" + String.valueOf(straipsnioID) ;
+        article.puslapio_id = puslapioID;
 
         insertStraipsnis(article);
     }
