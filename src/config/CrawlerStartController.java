@@ -36,7 +36,6 @@ public class CrawlerStartController {
         for(MappingArticle map : MainView.mapsList){
             if(map.isIsSelected()){
                 String crawlStorageFolder = "./models";
-//                int numberOfCrawlers = 1;
 
                 CrawlConfig config = new CrawlConfig();
                 String page = map.pageURL;

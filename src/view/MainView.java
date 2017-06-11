@@ -60,7 +60,6 @@ public class MainView {
                 alert.setTitle("Error");
                 alert.setHeaderText(null);
                 alert.setContentText("Atleast one page must be selected!");
-
                 alert.showAndWait();
                 return;
             }

@@ -29,15 +29,15 @@ public class MappingController {
     public static MappingArticle allMap() {
         MappingArticle map = new MappingArticle();
         map.antraste = Lists.newArrayList("og:title");
-        map.kategorija = Lists.newArrayList("cxenseparse:recs:category", "article:section");
-        map.tags = Lists.newArrayList("keywords");
-        map.turinys = Lists.newArrayList("div.articleBody p", "[itemprop=articleBody]", "div.article_content p");
-        map.autorius = Lists.newArrayList("og:article:author", "article:author", ".author-wrap");
-        map.parasymoData = Lists.newArrayList("[itemprop=datePublished]");
-        map.koment_commentDate = Lists.newArrayList(".comment-date", "date");
-        map.koment_Komentaras = Lists.newArrayList(".comment-content-inner", "comment");
-        map.koment_Slapyvardis = Lists.newArrayList(".comment-author", "user_name");
-        map.koment_userIP = Lists.newArrayList(".comment-date", "user_ip");
+        map.kategorija = Lists.newArrayList("cxenseparse:recs:category", "article:section", "articleSection","BLOKAS_SLUG", "og:article:section", ".custom-breadcrumbs-item-1");
+        map.tags = Lists.newArrayList("keywords", "name=keywords");
+        map.turinys = Lists.newArrayList("div.articleBody p", "[itemprop=articleBody]", "div.article_content p",".article_inside","#intext", "FULL_TEXT", ".article__content p");
+        map.autorius = Lists.newArrayList("og:article:author", "article:author", ".author-wrap", "itemprop=author", "author", ".authorFullName", "[itemprop=author]");
+        map.parasymoData = Lists.newArrayList("[itemprop=datePublished]", "itemprop=datePublished", ".date-current", "DATA");
+        map.koment_commentDate = Lists.newArrayList(".comment-date", "date" ,".date", "time");
+        map.koment_Komentaras = Lists.newArrayList(".comment-content-inner", "comment", ".cont", ".user-comment-comment", ".break-word", ".com p", ".cont");
+        map.koment_Slapyvardis = Lists.newArrayList(".comment-author", "user_name", ".user_name", ".username", ".name", "property=dc:title");
+        map.koment_userIP = Lists.newArrayList(".comment-date", "user_ip", ".ip", ".report");
         map.isCommentJSON = false;
         return map;
     }
